@@ -1,0 +1,6 @@
+{
+  "name": "AI业务事项核验智能体",
+  "description": "专用于核查存量核心业务事项质量的AI智能体系统",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
