@@ -6,9 +6,10 @@ import { Check } from 'lucide-react';
 interface ReportViewProps {
   data: ReportData;
   onReset: () => void;
+  onViewHistory: () => void;
 }
 
-export function ReportView({ data, onReset }: ReportViewProps) {
+export function ReportView({ data, onReset, onViewHistory }: ReportViewProps) {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -67,7 +68,7 @@ export function ReportView({ data, onReset }: ReportViewProps) {
                 ))}
                 {data.items.length > 10 && (
                   <tr className="border-b border-gray-100 bg-gray-50/30">
-                    <td colSpan={3} className="py-4 text-center text-gray-400 italic">
+                    <td colSpan={3} className="py-4 text-center text-gray-400 ">
                       ... 余下 {data.items.length - 10} 条数据隐藏展示 ...
                     </td>
                   </tr>
@@ -116,7 +117,7 @@ export function ReportView({ data, onReset }: ReportViewProps) {
                 ))}
                 {data.problems.length === 0 && (
                    <tr className="border-b border-gray-100">
-                     <td colSpan={5} className="py-8 text-center text-gray-500 italic font-serif">当前数据集中未发现缺失或重复问题。</td>
+                     <td colSpan={5} className="py-8 text-center text-gray-500  font-serif">当前数据集中未发现缺失或重复问题。</td>
                    </tr>
                 )}
               </tbody>
@@ -134,6 +135,10 @@ export function ReportView({ data, onReset }: ReportViewProps) {
             <div className="flex items-center gap-2 -ml-4">
               <button onClick={onReset} className="text-xs font-bold text-gray-500 px-4 py-2 hover:text-black transition-colors bg-transparent">
                 重新核验
+              </button>
+              <span className="text-gray-300">|</span>
+              <button onClick={onViewHistory} className="text-xs font-bold text-gray-500 px-4 py-2 hover:text-black transition-colors bg-transparent">
+                历史报告
               </button>
               <span className="text-gray-300">|</span>
               <button onClick={() => setIsFeedbackOpen(true)} className="text-xs font-bold text-gray-500 px-4 py-2 hover:text-black transition-colors bg-transparent underline underline-offset-4">
@@ -160,7 +165,7 @@ export function ReportView({ data, onReset }: ReportViewProps) {
               {!isSubmitted ? (
                 <form onSubmit={handleFeedbackSubmit}>
                   <header className="mb-6 border-b-2 border-black pb-4">
-                    <h3 className="font-serif text-2xl italic tracking-tight text-[#1A1A1A]">对报告有异议</h3>
+                    <h3 className="font-serif text-2xl  tracking-tight text-[#1A1A1A]">对报告有异议</h3>
                     <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest">Report Issue / Feedback</p>
                   </header>
                   <textarea
@@ -180,7 +185,7 @@ export function ReportView({ data, onReset }: ReportViewProps) {
                   <div className="w-16 h-16 bg-black text-white flex items-center justify-center mx-auto mb-6">
                     <Check className="w-8 h-8" />
                   </div>
-                  <p className="text-xl font-serif italic text-[#1A1A1A] mb-2">感谢您的反馈</p>
+                  <p className="text-xl font-serif  text-[#1A1A1A] mb-2">感谢您的反馈</p>
                   <p className="text-sm font-medium text-gray-600">后续将由专人联系处理。</p>
                 </div>
               )}

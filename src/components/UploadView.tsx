@@ -5,9 +5,10 @@ import { motion } from 'motion/react';
 
 interface UploadViewProps {
   onUpload: (file: File) => void;
+  onViewHistory: () => void;
 }
 
-export function UploadView({ onUpload }: UploadViewProps) {
+export function UploadView({ onUpload, onViewHistory }: UploadViewProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -44,11 +45,19 @@ export function UploadView({ onUpload }: UploadViewProps) {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-xl mx-auto w-full pt-16 flex flex-col justify-center"
     >
-      <header className="mb-12">
-        <h2 className="text-4xl font-serif leading-tight italic border-b-2 border-black pb-4 mb-2">
-          核心业务事项上传
-        </h2>
-        <p className="text-sm text-gray-500 font-medium">上传存量核心业务事项清单以进行自动化核验</p>
+      <header className="mb-12 flex justify-between items-end border-b-2 border-black pb-4">
+        <div>
+          <h2 className="text-4xl font-serif leading-tight  mb-2">
+            核心业务事项上传
+          </h2>
+          <p className="text-sm text-gray-500 font-medium">上传存量核心业务事项清单以进行自动化核验</p>
+        </div>
+        <button 
+          onClick={onViewHistory}
+          className="flex items-center gap-2 px-6 py-2.5 border-2 border-black text-black bg-white text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition-colors"
+        >
+          历史报告
+        </button>
       </header>
 
       <div className="mb-10">

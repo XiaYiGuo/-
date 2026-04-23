@@ -29,7 +29,7 @@ export function AnalyzingView() {
          <div className="w-16 h-16 bg-black flex items-center justify-center rounded-sm mx-auto mb-6">
             <span className="text-white font-serif text-3xl">AI</span>
           </div>
-         <h2 className="text-2xl font-serif italic text-center text-[#1A1A1A]">AI 处理中</h2>
+         <h2 className="text-2xl font-serif  text-center text-[#1A1A1A]">AI 处理中</h2>
       </div>
 
       <div className="space-y-6 w-full">

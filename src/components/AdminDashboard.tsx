@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Plus, X, BarChart, List, MessageSquare, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Plus, X, BarChart, List, MessageSquare, AlertCircle, Clock, ClipboardList } from 'lucide-react';
 
 interface AdminDashboardProps {
   onBack: () => void;
 }
 
 export function AdminDashboard({ onBack }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'tasks' | 'stats' | 'feedback'>('tasks');
+  const [activeTab, setActiveTab] = useState<'tasks' | 'history' | 'stats' | 'feedback'>('history');
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [feedbackDetail, setFeedbackDetail] = useState<any>(null); // null means modal closed
 
@@ -60,15 +60,16 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
         </button>
 
         <div className="px-8 mb-6">
-          <h2 className="font-serif italic text-2xl text-[#1A1A1A]">后台管理</h2>
+          <h2 className="font-serif  text-2xl text-[#1A1A1A]">后台管理</h2>
           <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mt-2">Admin Center</p>
         </div>
 
         <nav className="flex-1 flex flex-col space-y-2 px-4">
           {[
-            { id: 'tasks', label: '核验任务管理', icon: List },
+            { id: 'history', label: '历史记录', icon: Clock },
             { id: 'stats', label: '统计分析', icon: BarChart },
-            { id: 'feedback', label: '问题反馈管理', icon: MessageSquare }
+            { id: 'feedback', label: '问题反馈管理', icon: MessageSquare },
+            { id: 'tasks', label: '任务管理', icon: ClipboardList }
           ].map((item) => (
             <button
               key={item.id}
@@ -88,20 +89,73 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
 
       {/* Main Content */}
       <main className="flex-1 p-8 md:p-12 overflow-y-auto">
-        {/* TAB: TASKS */}
+        {/* TAB: TASKS (Scheduled Task Configuration) */}
         {activeTab === 'tasks' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
               <div>
-                <h3 className="text-3xl font-serif italic text-[#1A1A1A]">核验任务管理</h3>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Audit Tasks History</p>
+                <h3 className="text-3xl font-serif  text-[#1A1A1A]">任务管理</h3>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Scheduled Task Configuration</p>
               </div>
               <button 
-                onClick={() => setIsTaskModalOpen(true)}
+                onClick={() => alert('进入新建定时规则流程')}
                 className="flex items-center gap-2 px-6 py-2.5 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors"
               >
-                <Plus className="w-4 h-4" /> 新增任务
+                <Plus className="w-4 h-4" /> 新建规则
               </button>
+            </div>
+
+            <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-widest font-bold text-gray-400 border-b border-gray-200">
+                  <th className="py-3 px-4 font-normal">规则 ID</th>
+                  <th className="py-3 px-4 font-normal">目标范围</th>
+                  <th className="py-3 px-4 font-normal">执行频率</th>
+                  <th className="py-3 px-4 font-normal">下次执行时间</th>
+                  <th className="py-3 px-4 font-normal">状态</th>
+                  <th className="py-3 pl-4 font-normal text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-4 font-mono text-[11px] font-bold text-gray-500">CRON-001</td>
+                  <td className="py-4 px-4 font-medium text-[#1A1A1A]">全局系统扫描</td>
+                  <td className="py-4 px-4 text-gray-600">每周五 23:00</td>
+                  <td className="py-4 px-4 text-gray-600">2023-11-03 23:00</td>
+                  <td className="py-4 px-4">
+                    <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest border border-green-500 text-green-600 bg-green-50">已启用</span>
+                  </td>
+                  <td className="py-4 pl-4 text-right">
+                    <button className="underline underline-offset-4 font-bold text-[#1A1A1A] hover:text-gray-500 text-[11px] uppercase tracking-widest mr-4">编辑</button>
+                    <button className="underline underline-offset-4 font-bold text-red-600 hover:text-red-400 text-[11px] uppercase tracking-widest">停用</button>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-4 font-mono text-[11px] font-bold text-gray-500">CRON-002</td>
+                  <td className="py-4 px-4 font-medium text-[#1A1A1A]">交通运输局</td>
+                  <td className="py-4 px-4 text-gray-600">每月 1 日 02:00</td>
+                  <td className="py-4 px-4 text-gray-600">2023-12-01 02:00</td>
+                  <td className="py-4 px-4">
+                    <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest border border-gray-300 text-gray-400 bg-gray-50">已停用</span>
+                  </td>
+                  <td className="py-4 pl-4 text-right">
+                    <button className="underline underline-offset-4 font-bold text-[#1A1A1A] hover:text-gray-500 text-[11px] uppercase tracking-widest mr-4">编辑</button>
+                    <button className="underline underline-offset-4 font-bold text-green-600 hover:text-green-500 text-[11px] uppercase tracking-widest">启用</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </motion.div>
+        )}
+
+        {/* TAB: HISTORY */}
+        {activeTab === 'history' && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
+              <div>
+                <h3 className="text-3xl font-serif  text-[#1A1A1A]">历史记录</h3>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Audit History Records</p>
+              </div>
             </div>
 
             <table className="w-full text-left border-collapse min-w-[600px]">
@@ -152,7 +206,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
              <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
               <div>
-                <h3 className="text-3xl font-serif italic text-[#1A1A1A]">统计分析</h3>
+                <h3 className="text-3xl font-serif  text-[#1A1A1A]">统计分析</h3>
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Intelligence Dashboard</p>
               </div>
             </div>
@@ -160,17 +214,17 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
             <div className="bg-[#1A1A1A] text-white p-8 md:p-12 flex flex-col md:flex-row justify-around gap-8 mb-12 shadow-xl">
               <div className="text-center">
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-2">核验报告总数</p>
-                <p className="text-6xl font-serif italic">{stats.depts}</p>
+                <p className="text-6xl font-serif ">{stats.depts}</p>
               </div>
               <div className="hidden md:block w-px bg-white/10" />
               <div className="text-center">
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-2">核验事项总数</p>
-                <p className="text-6xl font-serif italic">{stats.items.toLocaleString()}</p>
+                <p className="text-6xl font-serif ">{stats.items.toLocaleString()}</p>
               </div>
               <div className="hidden md:block w-px bg-white/10" />
               <div className="text-center">
                 <p className="text-[10px] text-amber-500 uppercase tracking-widest font-bold mb-2">发现问题事项数</p>
-                <p className="text-6xl font-serif italic text-amber-500">{stats.problems}</p>
+                <p className="text-6xl font-serif  text-amber-500">{stats.problems}</p>
               </div>
             </div>
 
@@ -184,7 +238,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
                         <span className="w-6 h-6 text-[10px] flex items-center justify-center font-bold bg-gray-100 text-gray-500 rounded-full">{i + 1}</span>
                         <span className="font-medium text-[#1A1A1A]">{prob.type}</span>
                       </div>
-                      <span className="text-lg font-serif italic text-gray-500">{prob.count}项</span>
+                      <span className="text-lg font-serif  text-gray-500">{prob.count}项</span>
                     </li>
                   ))}
                 </ul>
@@ -196,7 +250,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
                   {qualityRankings.map((rk, i) => (
                     <li key={i} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className={`w-8 h-8 text-[11px] flex items-center justify-center font-serif italic font-bold border ${i === 0 ? 'bg-black text-white border-black' : 'bg-transparent text-black border-black'}`}>No.{rk.rank}</span>
+                        <span className={`w-8 h-8 text-[11px] flex items-center justify-center font-serif  font-bold border ${i === 0 ? 'bg-black text-white border-black' : 'bg-transparent text-black border-black'}`}>No.{rk.rank}</span>
                         <span className="font-medium text-[#1A1A1A]">{rk.dept}</span>
                       </div>
                       <span className="font-bold text-[#1A1A1A]">{rk.validCount} <span className="text-xs uppercase text-gray-400">Valid</span></span>
@@ -219,7 +273,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
              <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
               <div>
-                <h3 className="text-3xl font-serif italic text-[#1A1A1A]">问题反馈管理</h3>
+                <h3 className="text-3xl font-serif  text-[#1A1A1A]">问题反馈管理</h3>
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">User Feedback Resolution</p>
               </div>
             </div>
@@ -280,23 +334,39 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
               <button onClick={() => setIsTaskModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black">
                 <X className="w-5 h-5" />
               </button>
-              <h3 className="font-serif text-2xl italic mb-6 border-b border-black pb-4">新增任务</h3>
+              <h3 className="font-serif text-2xl  mb-6 border-b border-black pb-4">新建数据目录核验规则</h3>
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">业务部门 / Department</label>
-                  <input type="text" className="w-full border border-gray-300 p-2 text-sm focus:border-black focus:outline-none" defaultValue="交通运输局" />
+                  <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">目标范围</label>
+                  <select className="w-full border border-gray-300 p-2 text-sm focus:border-black focus:outline-none bg-transparent">
+                    <option>全局系统扫描</option>
+                    <option>市直各部门录入库</option>
+                    <option>教育部门自建库</option>
+                    <option>交通运输局自建库</option>
+                  </select>
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">开始时间 / Start Time</label>
-                  <input type="datetime-local" className="w-full border border-gray-300 p-2 text-sm focus:border-black focus:outline-none" />
+                  <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">执行频率</label>
+                  <select className="w-full border border-gray-300 p-2 text-sm focus:border-black focus:outline-none bg-transparent">
+                    <option>每周一次</option>
+                    <option>每月一次</option>
+                    <option>每季度一次</option>
+                    <option>仅执行一次</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">首次开始时间</label>
+                  <input type="datetime-local" className="w-full border border-gray-300 p-2 text-sm focus:border-black focus:outline-none bg-transparent" />
                 </div>
               </div>
-              <p className="text-[10px] text-gray-400 italic mb-6">建议后续可以通过指令下达的形式自动生成。</p>
               <button 
-                onClick={() => setIsTaskModalOpen(false)}
+                onClick={() => {
+                  alert("定时核验规则配置成功！");
+                  setIsTaskModalOpen(false);
+                }}
                 className="w-full py-3 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors"
               >
-                Create Task
+                保存规则
               </button>
             </motion.div>
           </div>
@@ -316,7 +386,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
               <button onClick={() => setFeedbackDetail(null)} className="absolute top-6 right-6 text-gray-400 hover:text-black">
                 <X className="w-6 h-6" />
               </button>
-              <h3 className="font-serif text-3xl italic mb-8 border-b-2 border-black pb-4">问题处置记录</h3>
+              <h3 className="font-serif text-3xl  mb-8 border-b-2 border-black pb-4">问题处置记录</h3>
               
               <div className="grid grid-cols-2 gap-6 mb-8 text-sm">
                  <div>

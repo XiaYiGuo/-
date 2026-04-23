@@ -11,8 +11,10 @@ interface CatalogReportViewProps {
 const mockReport: DataCatalogReportData = {
   departmentName: '医保局',
   totalItems: 42,
+  missingCatalogCount: 5,
   invalidNameCount: 3,
   invalidRuleCount: 7,
+  missingFieldCount: 8,
   typeErrorCount: 12,
   date: '2023-10-30',
   items: [
@@ -21,17 +23,28 @@ const mockReport: DataCatalogReportData = {
     { id: '3', index: 3, systemName: 'XXX医保系统', catalogName: 'XXX医保系统参保人员信息' },
   ],
   catalogProblems: [
-    { id: 'c1', index: 1, systemName: 'XXX医保系统', catalogName: '救助金数据123', problem: '名称不规范', suggestion: '区域+应用系统+表信息' },
-    { id: 'c2', index: 2, systemName: 'XXX医保系统', catalogName: '测试用表', problem: '重点领域分类不合理', suggestion: '建议“科技创新”' },
+    { id: 'c1', index: 1, systemName: 'XXX医保系统', catalogName: 'XXX医保系统救助金管理数据', problem: '目录名称和表名不对应', suggestion: '区域+应用系统+表信息' },
+    { id: 'c2', index: 2, systemName: 'XXX医保系统', catalogName: 'XXX医保系统测试用表', problem: '重点领域分类不合理', suggestion: '建议改为“科技创新”' },
   ],
   dataItemProblems: [
-    { id: 'd1', index: 1, catalogName: 'XXX医保系统救助金管理数据', dataItem: 'apply_fund', problem: '数据类型不一致', suggestion: '建议“VARCHAR”' },
+    { id: 'd1', index: 1, catalogName: 'XXX医保系统救助金管理数据', dataItem: 'apply_fund', problem: '数据类型不一致', suggestion: '建议修改为“VARCHAR”' },
     { id: 'd2', index: 2, catalogName: 'XXX医保系统医保管理数据', dataItem: 'user_id', problem: '主键不一致', suggestion: '建议改为ID字段' },
   ]
 };
 
 export function CatalogReportView({ onBack }: CatalogReportViewProps) {
   const data = mockReport;
+
+  // Group suggestions by catalog
+  const suggestionsByCatalog: Record<string, string[]> = {};
+  data.catalogProblems.forEach(p => {
+    if (!suggestionsByCatalog[p.catalogName]) suggestionsByCatalog[p.catalogName] = [];
+    suggestionsByCatalog[p.catalogName].push(`目录问题：${p.problem}；建议：${p.suggestion}`);
+  });
+  data.dataItemProblems.forEach(p => {
+    if (!suggestionsByCatalog[p.catalogName]) suggestionsByCatalog[p.catalogName] = [];
+    suggestionsByCatalog[p.catalogName].push(`字段【${p.dataItem}】问题：${p.problem}；建议：${p.suggestion}`);
+  });
 
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
@@ -66,7 +79,7 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
             {data.departmentName}部门数据目录核验报告
           </h2>
           <p className="text-[#1A1A1A] font-medium leading-relaxed text-left text-base mb-6">
-            本次针对{data.departmentName}共计{data.totalItems}条数据目录进行核验，核验范围仅针对部门内容自建系统的数据目录进行核验，省统建或无业务系统不在核验范围。核验内容包括数据目录及数据项，核验的事项清单如下：
+            本次针对{data.departmentName}共计{data.totalItems}条数据目录进行核验，核验范围仅针对部门内容自建系统的数据目录进行核验，省统建或无业务系统不在核验范围。核验内容包括数据目录及数据项，核验的目录清单如下：
           </p>
         </header>
 
@@ -90,7 +103,7 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
                   </tr>
                 ))}
                  <tr className="border-b border-gray-100 bg-gray-50/30">
-                    <td colSpan={3} className="py-4 text-center text-gray-400 italic">
+                    <td colSpan={3} className="py-4 text-center text-gray-400 ">
                       ... 余下 {data.totalItems - data.items.length} 条数据隐藏展示 ...
                     </td>
                   </tr>
@@ -103,7 +116,7 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
         <section className="mb-12 w-full">
           <h3 className="text-lg font-bold mb-4 font-serif">一、结论总结</h3>
           <p className="text-[#1A1A1A] leading-relaxed">
-            本次累计核验数据目录<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.totalItems}</span>条，其中数据目录名称不规范<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.invalidNameCount}</span>条，不符合规范<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.invalidRuleCount}</span>条，其中数据目录问题有数据类型错误<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.typeErrorCount}</span>条。
+            本次累计核验数据目录<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.totalItems}</span>条，其中数据目录缺失<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.missingCatalogCount || 0}</span>条，名称不规范<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.invalidNameCount}</span>条，不符合规范<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.invalidRuleCount}</span>条，其中数据项问题有字段缺失<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.missingFieldCount || 0}</span>条、数据类型错误<span className="font-bold underline decoration-black underline-offset-4 mx-1">{data.typeErrorCount}</span>条。
           </p>
         </section>
 
@@ -137,7 +150,7 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
         </section>
         
         {/* Section 3: Data Item Problem Details */}
-        <section className="mb-16 w-full">
+        <section className="mb-12 w-full">
           <h3 className="text-lg font-bold mb-4 font-serif">三、数据项问题明细</h3>
           <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[600px]">
@@ -165,8 +178,32 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
           </div>
         </section>
 
+        {/* Section 4: Suggestions */}
+        <section className="mb-16 w-full">
+          <h3 className="text-lg font-bold mb-6 font-serif">四、修改建议</h3>
+          <div className="space-y-6">
+            {Object.entries(suggestionsByCatalog).map(([catalogName, suggestions], idx) => (
+              <div key={catalogName} className="bg-gray-50 p-5 border border-gray-200">
+                <h4 className="font-bold text-[#1A1A1A] mb-3 border-l-[3px] border-black pl-3 text-[15px]">
+                  4.{idx + 1} {catalogName} 目录
+                </h4>
+                <ul className="space-y-2 pl-4">
+                  {suggestions.map((sug, sIdx) => (
+                    <li key={sIdx} className="text-sm text-gray-700 font-medium">
+                      {sIdx + 1}. {sug}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            {Object.keys(suggestionsByCatalog).length === 0 && (
+               <div className="py-6 text-center text-gray-400 ">全部目录状态良好，暂无修改建议</div>
+            )}
+          </div>
+        </section>
+
         <footer className="mt-auto w-full">
-          <div className="text-right text-sm font-bold text-[#1A1A1A] space-y-2 mb-12">
+          <div className="text-right text-base font-bold font-serif text-[#1A1A1A] space-y-2 mb-12">
             <p>[AI数据目录核验智能体]</p>
             <p>[{data.date}]</p>
           </div>
@@ -201,7 +238,7 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
               {!isSubmitted ? (
                 <form onSubmit={handleFeedbackSubmit}>
                   <header className="mb-6 border-b-2 border-black pb-4">
-                    <h3 className="font-serif text-2xl italic tracking-tight text-[#1A1A1A]">对报告有异议</h3>
+                    <h3 className="font-serif text-2xl  tracking-tight text-[#1A1A1A]">对报告有异议</h3>
                     <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest">Report Issue / Feedback</p>
                   </header>
                   <textarea
@@ -221,7 +258,7 @@ export function CatalogReportView({ onBack }: CatalogReportViewProps) {
                   <div className="w-16 h-16 bg-black text-white flex items-center justify-center mx-auto mb-6">
                     <Check className="w-8 h-8" />
                   </div>
-                  <p className="text-xl font-serif italic text-[#1A1A1A] mb-2">感谢您的反馈</p>
+                  <p className="text-xl font-serif  text-[#1A1A1A] mb-2">感谢您的反馈</p>
                   <p className="text-sm font-medium text-gray-600">后续将由专人联系处理。</p>
                 </div>
               )}

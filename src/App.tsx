@@ -7,8 +7,19 @@ import { LandingView } from './components/LandingView';
 import { CatalogOverview } from './components/datacatalog/CatalogOverview';
 import { CatalogReportView } from './components/datacatalog/CatalogReportView';
 import { CatalogAdminDashboard } from './components/datacatalog/CatalogAdminDashboard';
+import { HistoryModal, HistoryItem } from './components/HistoryModal';
 import { parseExcelAndAnalyze, loadMockData } from './lib/parser';
 import { ReportData } from './types';
+
+const MOCK_CORE_HISTORY: HistoryItem[] = [
+  { id: '1', name: '市直各部门核心业务事项核验报告', date: '2023-11-20 15:30:00', status: '已归档' },
+  { id: '2', name: '交通运输局核心业务事项补充核验', date: '2023-10-15 10:00:00', status: '已归档' }
+];
+
+const MOCK_CATALOG_HISTORY: HistoryItem[] = [
+  { id: '1', name: '市政数据目录自动化核验（全量）', date: '2023-11-18 14:20:00', status: '已归档' },
+  { id: '2', name: '卫健委数据目录核验报告', date: '2023-10-10 09:12:00', status: '已归档' }
+];
 
 export default function App() {
   const [appMode, setAppMode] = useState<'landing' | 'core' | 'catalog'>('landing');
@@ -19,6 +30,10 @@ export default function App() {
 
   // Data Catalog State
   const [catalogView, setCatalogView] = useState<'overview' | 'report' | 'admin'>('overview');
+
+  // History Modals State
+  const [isCoreHistoryOpen, setIsCoreHistoryOpen] = useState(false);
+  const [isCatalogHistoryOpen, setIsCatalogHistoryOpen] = useState(false);
 
   const handleCoreUpload = async (file: File) => {
     setCoreView('analyzing');
@@ -41,7 +56,7 @@ export default function App() {
   };
 
   const currentTitle = appMode === 'landing' 
-    ? 'AI 数据治理管控平台' 
+    ? 'AI数据服务场景' 
     : appMode === 'core' 
       ? '核心业务核验智能体'
       : '数据目录核验智能体';
@@ -57,7 +72,7 @@ export default function App() {
           >
              <span className="text-white font-serif text-lg">AI</span>
           </div>
-          <span className="font-serif italic text-xl tracking-tight">{currentTitle}</span>
+          <span className="font-serif  text-xl tracking-tight">{currentTitle}</span>
         </div>
         
         {appMode === 'core' && (
@@ -110,7 +125,10 @@ export default function App() {
           ) : (
             <main className="flex-1 w-full flex p-8 md:p-12 max-w-6xl mx-auto">
               {coreView === 'upload' && (
-                <UploadView onUpload={handleCoreUpload} />
+                <UploadView 
+                  onUpload={handleCoreUpload} 
+                  onViewHistory={() => setIsCoreHistoryOpen(true)} 
+                />
               )}
               
               {coreView === 'analyzing' && (
@@ -120,7 +138,11 @@ export default function App() {
               )}
               
               {coreView === 'report' && reportData && (
-                <ReportView data={reportData} onReset={handleCoreReset} />
+                <ReportView 
+                  data={reportData} 
+                  onReset={handleCoreReset} 
+                  onViewHistory={() => setIsCoreHistoryOpen(true)}
+                />
               )}
             </main>
           )}
@@ -135,7 +157,10 @@ export default function App() {
           ) : (
             <main className="flex-1 w-full flex p-8 md:p-12 max-w-6xl mx-auto">
                {catalogView === 'overview' && (
-                 <CatalogOverview onGenerateReport={() => setCatalogView('report')} />
+                 <CatalogOverview 
+                    onGenerateReport={() => setCatalogView('report')} 
+                    onViewHistory={() => setIsCatalogHistoryOpen(true)}
+                 />
                )}
                {catalogView === 'report' && (
                  <CatalogReportView onBack={() => setCatalogView('overview')} />
@@ -144,6 +169,32 @@ export default function App() {
           )}
         </>
       )}
+
+      {/* History Modals */}
+      <HistoryModal
+        isOpen={isCoreHistoryOpen}
+        onClose={() => setIsCoreHistoryOpen(false)}
+        title="核心业务事项历史报告"
+        items={MOCK_CORE_HISTORY}
+        onSelectItem={async (item) => {
+          setIsCoreHistoryOpen(false);
+          // Simulate loading history report data
+          const data = await loadMockData();
+          setReportData(data);
+          setCoreView('report');
+        }}
+      />
+
+      <HistoryModal
+        isOpen={isCatalogHistoryOpen}
+        onClose={() => setIsCatalogHistoryOpen(false)}
+        title="数据目录核验历史报告"
+        items={MOCK_CATALOG_HISTORY}
+        onSelectItem={(item) => {
+          setIsCatalogHistoryOpen(false);
+          setCatalogView('report');
+        }}
+      />
     </div>
   );
 }

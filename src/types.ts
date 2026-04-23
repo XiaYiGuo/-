@@ -49,8 +49,10 @@ export interface DataCatalogItem {
 export interface DataCatalogReportData {
   departmentName: string;
   totalItems: number;
+  missingCatalogCount?: number;
   invalidNameCount: number;
   invalidRuleCount: number;
+  missingFieldCount?: number;
   typeErrorCount: number;
   date: string;
   items: {
